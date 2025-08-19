@@ -11,15 +11,15 @@
   <h1>📸 Remote Pi Camera</h1>
   <button onclick="capture()">Capture Image</button>
   <div>
-    <img id="latest" src="https://abc123.ngrok-free.app/latest.jpg" />
+    <img id="latest" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" />
   </div>
 
   <script>
     function capture() {
-      fetch('https://abc123.ngrok-free.app/capture')
+      fetch('https://5ecad4233aeb.ngrok-free.app/capture')
         .then(() => {
           const img = document.getElementById('latest');
-          img.src = 'https://abc123.ngrok-free.app/latest.jpg?t=' + new Date().getTime();
+          img.src = 'https://5ecad4233aeb.ngrok-free.app/latest.jpg?t=' + new Date().getTime();
         });
     }
   </script>
