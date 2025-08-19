@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Remote Camera Viewer</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    button { padding: 10px 20px; font-size: 16px; }
+    img { margin-top: 20px; max-width: 90%; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>📸 Remote Camera System</h1>
+  <button onclick="captureImage()">Capture Image</button>
+
+  <div>
+    <img id="latest-img" src="https://<your-firebase>.appspot.com/captured.jpg" alt="Image will appear here">
+  </div>
+
+  <script>
+    function captureImage() {
+      fetch("https://<your-ngrok-url>.ngrok-free.app/capture")
+        .then(() => {
+          // Refresh image with cache buster
+          const img = document.getElementById('latest-img');
+          img.src = img.src.split('?')[0] + '?t=' + new Date().getTime();
+        })
+        .catch(err => alert("Capture failed: " + err));
+    }
+  </script>
+</body>
+</html>
