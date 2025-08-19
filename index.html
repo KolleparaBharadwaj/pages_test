@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Remote Pi Camera Bharadwaj 📸</title>
+  <title>Remote Pi Camera</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
-    h1 { font-size: 2em; }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-    img { max-width: 95%; margin-top: 20px; border: 1px solid #ccc; }
+    body { font-family: sans-serif; text-align: center; margin: 50px; }
+    img { max-width: 95%; border: 1px solid #ccc; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -15,18 +13,24 @@
   <button onclick="capture()">Capture Image</button>
 
   <div>
-    <img id="latest" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" alt="Image will appear here" />
+    <img id="preview" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" alt="Captured Image" />
   </div>
 
   <script>
     function capture() {
-      fetch('https://5ecad4233aeb.ngrok-free.app/capture')
-        .then(() => {
-          const img = document.getElementById('latest');
-          // bust the cache to get new image
-          img.src = 'https://5ecad4233aeb.ngrok-free.app/latest.jpg?t=' + new Date().getTime();
+      fetch("https://5ecad4233aeb.ngrok-free.app/capture", { method: "POST" })
+        .then(response => {
+          if (!response.ok) throw new Error("Capture failed");
+          return response.json();
         })
-        .catch(err => alert("Capture failed: " + err));
+        .then(() => {
+          const img = document.getElementById("preview");
+          img.src = "https://5ecad4233aeb.ngrok-free.app/latest.jpg?t=" + new Date().getTime(); // Cache bust
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Error capturing image: " + err.message);
+        });
     }
   </script>
 </body>
