@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Remote Pi Camera</title>
+  <title>Remote Pi Camera Bharadwaj 📸</title>
   <style>
-    body { font-family: Arial; text-align: center; margin: 40px; }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
+    h1 { font-size: 2em; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
     img { max-width: 95%; margin-top: 20px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
-  <h1>📸 Remote Pi Camera Bharadwaj</h1>
+  <h1>📸 Remote Pi Camera</h1>
+
   <button onclick="capture()">Capture Image</button>
+
   <div>
-    <img id="latest" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" />
+    <img id="latest" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" alt="Image will appear here" />
   </div>
 
   <script>
@@ -19,8 +23,10 @@
       fetch('https://5ecad4233aeb.ngrok-free.app/capture')
         .then(() => {
           const img = document.getElementById('latest');
+          // bust the cache to get new image
           img.src = 'https://5ecad4233aeb.ngrok-free.app/latest.jpg?t=' + new Date().getTime();
-        });
+        })
+        .catch(err => alert("Capture failed: " + err));
     }
   </script>
 </body>
