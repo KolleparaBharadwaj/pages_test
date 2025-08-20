@@ -13,19 +13,19 @@
   <button onclick="capture()">Capture Image</button>
 
   <div>
-    <img id="preview" src="https://5ecad4233aeb.ngrok-free.app/latest.jpg" alt="Captured Image" />
+    <img id="preview" src="https://e9fcfbf31b8b.ngrok-free.app/latest.jpg" alt="Captured Image" />
   </div>
 
   <script>
     function capture() {
-      fetch("https://5ecad4233aeb.ngrok-free.app/capture", { method: "POST" })
+      fetch("https://e9fcfbf31b8b.ngrok-free.app/capture", { method: "POST" })
         .then(response => {
           if (!response.ok) throw new Error("Capture failed");
           return response.json();
         })
         .then(() => {
           const img = document.getElementById("preview");
-          img.src = "https://5ecad4233aeb.ngrok-free.app/latest.jpg?t=" + new Date().getTime(); // Cache bust
+          img.src = "https://e9fcfbf31b8b.ngrok-free.app/latest.jpg?t=" + new Date().getTime(); // Cache bust
         })
         .catch(err => {
           console.error(err);
