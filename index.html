@@ -97,12 +97,11 @@
   <div class="container">
     <header class="header">
       <div class="title">
-        <div style="font-size:26px">📡 MQTT + Camera Dashboard</div>
+        <div style="font-size:26px"> MQTT + Camera Dashboard</div>
         <span id="connBadge" class="badge"><span class="dot"></span><span id="connText">Connecting…</span></span>
       </div>
       <div class="row">
-        <span class="pill">Broker: <code>hivemq.cloud:8884</code></span>
-        <span class="pill">Topic: <code>test/topic</code></span>
+        <span class="pill">Broker: <code>Mqtt Borker</code></span>
       </div>
     </header>
 
@@ -122,10 +121,10 @@
         <ul class="list" id="msgList"></ul>
 
         <div class="footer">
-          <span>Subscribed to <code>test/topic</code></span>
           <div class="row">
             <button class="btn btn-ghost" id="clearBtn">🧹 Clear</button>
             <button class="btn" id="pauseBtn" aria-pressed="false">⏸️ Pause</button>
+            <button class="btn btn-primary" id="getDataBtn">📤 Get SmartJar Data</button>
           </div>
         </div>
       </div>
@@ -154,11 +153,13 @@
   </div>
 
   <script>
-    // ====== CONFIG (kept as in your original) ======
+    // ====== CONFIG ======
     const MQTT_BROKER = 'wss://e7ffb68b7a584515a2243f84fac41ca7.s1.eu.hivemq.cloud:8884/mqtt';
-    const IMAGE_URL   = 'https://bd9b20171165.ngrok-free.app/latest.jpg';
-    const CAPTURE_URL = 'https://bd9b20171165.ngrok-free.app/capture';
+    const IMAGE_URL   = 'https://1965bb033c05.ngrok-free.app/latest.jpg';
+    const CAPTURE_URL = 'https://1965bb033c05.ngrok-free.app/capture';
     const TOPIC       = 'test/topic';
+    const SMARTJAR_TOPIC = 'smartjar/command';
+    const SMARTJAR_DATA_TOPIC = 'smartjar/data';
 
     // ====== UI helpers ======
     const $ = (s) => document.querySelector(s);
@@ -170,6 +171,7 @@
     const pauseBtn  = $('#pauseBtn');
     const clearBtn  = $('#clearBtn');
     const captureBtn= $('#captureBtn');
+    const getDataBtn= $('#getDataBtn');
     const img       = $('#preview');
     const imgSkeleton = $('#imgSkeleton');
     const imgTs     = $('#imgTs');
@@ -224,7 +226,7 @@
       imgTs.textContent = `ts=${stamp}`;
     }
 
-    // ====== MQTT connection (logic preserved) ======
+    // ====== MQTT connection ======
     const client = mqtt.connect(MQTT_BROKER, {
       username: 'bharadwaj',
       password: 'IoTtest1',
@@ -238,7 +240,7 @@
 
     client.on('connect', () => {
       setConnStatus('connected');
-      client.subscribe(TOPIC, err => {
+      client.subscribe([TOPIC, SMARTJAR_DATA_TOPIC], err => {
         if (err) console.error('Subscribe error:', err);
       });
     });
@@ -252,7 +254,7 @@
       pushMessage(topic, message.toString());
     });
 
-    // ====== Camera capture (logic preserved) ======
+    // ====== Camera capture ======
     async function captureImage(){
       try{
         captureBtn.disabled = true;
@@ -263,21 +265,33 @@
         console.error('Error triggering capture:', err);
         alert('Capture failed. See console for details.');
       }finally{
-        setTimeout(()=>{ // small grace period to let camera write file
+        setTimeout(()=>{
           captureBtn.disabled = false;
           captureBtn.textContent = '📸 Capture Image';
         }, 600);
       }
     }
 
-    // Bind original onclick API for compatibility
-    window.captureImage = captureImage;
+    // ====== SmartJar Command ======
+    getDataBtn.addEventListener('click', () => {
+      client.publish(SMARTJAR_TOPIC, 'get_data', { qos: 0, retain: false }, (err) => {
+        if (err) {
+          console.error("❌ Failed to send SmartJar command:", err);
+          alert("Failed to send SmartJar command");
+        } else {
+          console.log("✅ SmartJar command sent!");
+        }
+      });
+    });
 
-    // ====== Image loading states ======
+    // Bind capture to button
+    captureBtn.addEventListener('click', captureImage);
+
+    // Image loading states
     img.addEventListener('load', () => setImgLoading(false));
     img.addEventListener('error', () => { setImgLoading(false); alert('Failed to load image.'); });
 
-    // ====== Controls ======
+    // Controls
     pauseBtn.addEventListener('click', ()=>{
       state.paused = !state.paused;
       pauseBtn.setAttribute('aria-pressed', String(state.paused));
@@ -288,8 +302,6 @@
       state.messages = [];
       renderList();
     });
-
-    captureBtn.addEventListener('click', captureImage);
 
     // Keyboard shortcuts
     window.addEventListener('keydown', (e)=>{
