@@ -7,59 +7,55 @@
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root{
-      --bg: #0b0f14;
-      --card: #121821;
-      --muted: #9fb0c3;
-      --text: #e6eef7;
-      --accent: #4ba3ff;
-      --accent-2:#7dd3fc;
-      --border: #1e2632;
-      --good:#22c55e;
-      --warn:#f59e0b;
-      --bad:#ef4444;
-      --btn:#1a2330;
-      --btn-hover:#223144;
+      --bg:#0b0f14; --card:#121821; --muted:#9fb0c3; --text:#e6eef7;
+      --accent:#4ba3ff; --accent-2:#7dd3fc; --border:#1e2632;
+      --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+      --btn:#1a2330; --btn-hover:#223144;
       --shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
     }
     @media (prefers-color-scheme: light){
       :root{
         --bg:#f6f8fb; --card:#ffffff; --muted:#546a82; --text:#0b1220;
-        --accent:#2563eb; --accent-2:#0ea5e9; --border:#e7edf5; --btn:#eef3f9; --btn-hover:#e3ecf7;
+        --accent:#2563eb; --accent-2:#0ea5e9; --border:#e7edf5;
+        --btn:#eef3f9; --btn-hover:#e3ecf7;
         --shadow: 0 10px 30px rgba(0,0,0,.05), inset 0 1px 0 rgba(255,255,255,.6);
       }
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0; background: radial-gradient(1200px 600px at 100% -150px, rgba(75,163,255,.15), transparent 60%),
-      radial-gradient(1000px 500px at -200px 40%, rgba(14,165,233,.12), transparent 60%), var(--bg);
-      color:var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 100% -150px, rgba(75,163,255,.15), transparent 60%),
+        radial-gradient(1000px 500px at -200px 40%, rgba(14,165,233,.12), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans";
     }
-    .container{max-width:1100px; margin:32px auto; padding:0 16px}
-    .header{display:flex; gap:16px; align-items:center; justify-content:space-between; margin-bottom:18px}
-    .title{display:flex; gap:12px; align-items:center}
+    .container{max-width:1100px; margin:28px auto; padding:0 16px}
+    .header{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:14px}
+    .title{display:flex; gap:10px; align-items:center}
     .badge{
       display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border);
       border-radius:999px; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow); font-size:13px;
     }
     .dot{width:10px; height:10px; border-radius:999px; background:var(--warn); box-shadow:0 0 0 3px rgba(245,158,11,.15)}
     .status-good .dot{background:var(--good); box-shadow:0 0 0 3px rgba(34,197,94,.15)}
     .status-bad .dot{background:var(--bad); box-shadow:0 0 0 3px rgba(239,68,68,.15)}
-    .grid{display:grid; gap:16px; grid-template-columns: 1.2fr 1fr}
+    .pill{font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(148,163,184,.12); border:1px solid var(--border)}
+    .grid{display:grid; gap:16px; grid-template-columns: 1.15fr 0.85fr}
     @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--card);
-      border:1px solid var(--border); border-radius:18px; padding:16px 16px 14px; box-shadow:var(--shadow)
+      border:1px solid var(--border); border-radius:18px; padding:16px; box-shadow:var(--shadow)
     }
     .card h3{margin:0 0 8px 0; font-size:16px}
-    .sub{color:var(--muted); font-size:13px}
-    code{background:rgba(148,163,184,.12); border:1px solid var(--border); padding:2px 6px; border-radius:6px}
-    .row{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+    .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .spacer{flex:1}
     .btn{
       appearance:none; border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)), var(--btn);
       color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; box-shadow: var(--shadow);
-      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease; font-size:14px;
     }
     .btn:hover{background:var(--btn-hover)}
     .btn:active{transform: translateY(1px)}
@@ -67,17 +63,53 @@
       background: linear-gradient(180deg, rgba(59,130,246,.25), rgba(59,130,246,.08)), var(--btn);
       border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
     }
-    .btn-ghost{background:transparent}
-    .pill{
-      font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(148,163,184,.12); border:1px solid var(--border)
+
+    /* KPIs */
+    .kpi-grid{
+      display:grid; gap:10px; margin-top:8px;
+      grid-template-columns: repeat(5, minmax(0,1fr));
     }
-    .kpi{display:flex; gap:10px; align-items:baseline}
-    .kpi .value{font-weight:600; font-size:18px}
-    .list{margin:8px 0 0 0; padding:0; list-style:none; max-height:220px; overflow:auto}
-    .list li{display:flex; gap:8px; padding:8px 0; border-bottom:1px dashed var(--border)}
-    .list li:last-child{border-bottom:none}
-    .topic{font-weight:600}
-    .ts{color:var(--muted); font-size:12px}
+    @media (max-width: 980px){ .kpi-grid{grid-template-columns: repeat(2, minmax(0,1fr));} }
+    .kpi{
+      border:1px solid var(--border); border-radius:14px; padding:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+      min-height:74px; display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .value{font-weight:700; font-size:18px; letter-spacing:.2px}
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border);
+      border-radius:999px; background:rgba(148,163,184,.12); font-weight:600;
+    }
+    .chip.good{border-color:color-mix(in oklab, var(--good) 50%, var(--border)); box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+    .chip.warn{border-color:color-mix(in oklab, var(--warn) 50%, var(--border)); box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+    .chip.bad{ border-color:color-mix(in oklab, var(--bad)  50%, var(--border)); box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+
+    .meter{
+      width:100%; height:10px; border-radius:999px; background:rgba(148,163,184,.18);
+      overflow:hidden; border:1px solid var(--border);
+    }
+    .meter > span{
+      display:block; height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .35s ease;
+    }
+
+    /* Spectral values list */
+    .spectral{
+      margin-top:10px; border:1px solid var(--border); border-radius:14px; padding:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+    }
+    .spectral-list{
+      display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap:8px; margin-top:6px;
+    }
+    .spectral-item{
+      border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;
+      background:rgba(148,163,184,.10);
+    }
+    .spectral-item .label{font-size:12px; color:var(--muted); margin-bottom:4px}
+    .spectral-item .val{font-weight:700; font-variant-numeric: tabular-nums}
+    /* Camera */
     .imgWrap{position:relative; overflow:hidden; border-radius:14px; border:1px solid var(--border); box-shadow:var(--shadow)}
     .imgWrap img{display:block; width:100%; height:auto}
     .skeleton{
@@ -88,145 +120,223 @@
       animation: shimmer 1.5s infinite;
     }
     @keyframes shimmer{0%{background-position: -200% 0, 0 0} 100%{background-position: 200% 0, 0 0}}
-    .footer{margin-top:14px; display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:12px}
-    .small{font-size:12px; color:var(--muted)}
-    .spacer{flex:1}
+    .footer{margin-top:10px; display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:12px}
+    code{background:rgba(148,163,184,.12); border:1px solid var(--border); padding:2px 6px; border-radius:6px}
   </style>
 </head>
 <body>
   <div class="container">
     <header class="header">
       <div class="title">
-        <div style="font-size:26px"> MQTT + Camera Dashboard</div>
+        <div style="font-size:24px">MQTT + Camera Dashboard</div>
         <span id="connBadge" class="badge"><span class="dot"></span><span id="connText">Connecting…</span></span>
       </div>
       <div class="row">
-        <span class="pill">Broker: <code>Mqtt Borker</code></span>
+        <span class="pill">Broker: <code>HiveMQ Cloud (WSS)</code></span>
       </div>
     </header>
 
     <section class="grid">
-      <!-- Live MQTT -->
-      <div class="card" id="mqttCard">
-        <h3>📨 Live Data</h3>
-        <div class="row" style="margin-top:6px">
-          <div class="kpi">
-            <span class="sub">Latest message</span>
-            <span class="value" id="mqttData">Waiting…</span>
-          </div>
-          <span class="spacer"></span>
-          <span class="small" id="lastMsgTs">–</span>
+      <!-- Left: single Get Data + SmartJar UI -->
+      <div class="card" id="controlCard">
+        <h3>📦 SmartJar</h3>
+        <div class="row" style="margin:8px 0 10px 0">
+          <button class="btn btn-primary" id="getDataBtn">📤 Get Data</button>
+          <span id="reqState" style="font-size:12px; color:var(--muted)">Idle</span>
         </div>
 
-        <ul class="list" id="msgList"></ul>
+        <div id="smartJarDataCard" style="display:none">
+          <div class="row" style="margin-bottom:10px">
+            <span id="airChip" class="chip">Air: –</span>
+            <span id="ingChip" class="chip">Ingredient: –</span>
+            <span class="spacer"></span>
+            <div style="min-width:220px">
+              <div class="row" style="gap:8px; align-items:center">
+                <span style="font-size:12px; color:var(--muted)">Confidence</span>
+                <span id="confVal" style="font-weight:700">0%</span>
+              </div>
+              <div class="meter" aria-label="Confidence"><span id="confBar"></span></div>
+            </div>
+          </div>
 
-        <div class="footer">
-          <div class="row">
-            <button class="btn btn-ghost" id="clearBtn">🧹 Clear</button>
-            <button class="btn" id="pauseBtn" aria-pressed="false">⏸️ Pause</button>
-            <button class="btn btn-primary" id="getDataBtn">📤 Get SmartJar Data</button>
+          <div class="kpi-grid">
+            <div class="kpi"><div class="label">Weight</div><div class="value" id="kpiWeight">–</div></div>
+            <div class="kpi"><div class="label">Temperature</div><div class="value" id="kpiTemp">–</div></div>
+            <div class="kpi"><div class="label">Humidity</div><div class="value" id="kpiHum">–</div></div>
+            <div class="kpi"><div class="label">Voltage</div><div class="value" id="kpiVolt">–</div></div>
+            <div class="kpi"><div class="label">Rs (Ω)</div><div class="value" id="kpiRs">–</div></div>
+          </div>
+
+          <!-- Spectral (values only) -->
+          <div class="spectral">
+            <div style="font-weight:600;">🌈 Spectral (values)</div>
+            <div id="spectralList" class="spectral-list">
+              <!-- Filled by JS -->
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Camera -->
+      <!-- Right: Camera (unchanged) -->
       <div class="card">
         <h3>📷 Remote Camera</h3>
-        <div class="row" style="margin:8px 0 12px 0">
+        <div class="row" style="margin:8px 0 10px 0">
           <button class="btn btn-primary" id="captureBtn">📸 Capture Image</button>
-          <span class="sub">Image updates after capture</span>
+          <span style="color:var(--muted);font-size:12px">Image updates after capture</span>
         </div>
-
         <div class="imgWrap">
           <div class="skeleton" id="imgSkeleton" aria-hidden="true"></div>
-          <img id="preview" src="https://bd9b20171165.ngrok-free.app/latest.jpg?ts=0" alt="Latest capture">
+          <img id="preview" src="https://newly-finer-panther.ngrok-free.app/latest.jpg?ts=0" alt="Latest capture">
         </div>
-
         <div class="footer">
-          <span class="small">Source: <code>/latest.jpg</code></span>
-          <span class="small" id="imgTs">ts=0</span>
+          <span>Source: <code>/latest.jpg</code></span>
+          <span id="imgTs">ts=0</span>
         </div>
       </div>
     </section>
 
-    <p class="small" style="margin-top:12px">Tip: Press <strong>c</strong> to capture, <strong>p</strong> to pause stream.</p>
+    <p style="margin-top:12px; color:var(--muted); font-size:12px">Tip: Press <b>c</b> to capture.</p>
   </div>
 
   <script>
     // ====== CONFIG ======
-    const MQTT_BROKER = 'wss://e7ffb68b7a584515a2243f84f41ca7.s1.eu.hivemq.cloud:8884/mqtt';
-    const IMAGE_URL   = 'https://1965bb033c05.ngrok-free.app/latest.jpg';
-    const CAPTURE_URL = 'https://1965bb033c05.ngrok-free.app/capture';
-    const TOPIC       = 'test/topic';
-    const SMARTJAR_TOPIC = 'smartjar/command';
-    const SMARTJAR_DATA_TOPIC = 'smartjar/data';
+    const MQTT_BROKER = 'wss://e7ffb68b7a584515a2243f84fac41ca7.s1.eu.hivemq.cloud:8884/mqtt';
+    const TOPIC_CMD   = 'smartjar/cmd';
+    const TOPIC_DATA  = 'smartjar/data';
+    const IMAGE_URL   = 'https://newly-finer-panther.ngrok-free.app/latest.jpg';
+    const CAPTURE_URL = 'https://newly-finer-panther.ngrok-free.app/capture';
 
-    // ====== UI helpers ======
-    const $ = (s) => document.querySelector(s);
-    const connBadge = $('#connBadge');
-    const connText  = $('#connText');
-    const mqttData  = $('#mqttData');
-    const lastMsgTs = $('#lastMsgTs');
-    const msgList   = $('#msgList');
-    const pauseBtn  = $('#pauseBtn');
-    const clearBtn  = $('#clearBtn');
-    const captureBtn= $('#captureBtn');
-    const getDataBtn= $('#getDataBtn');
-    const img       = $('#preview');
-    const imgSkeleton = $('#imgSkeleton');
-    const imgTs     = $('#imgTs');
+    // ====== DOM ======
+    const $ = (s)=>document.querySelector(s);
+    const connBadge = $('#connBadge'), connText = $('#connText');
+    const getDataBtn = $('#getDataBtn'), reqState = $('#reqState');
+    const smartCard = $('#smartJarDataCard');
+    const airChip = $('#airChip'), ingChip = $('#ingChip');
+    const confBar = $('#confBar'), confVal = $('#confVal');
+    const kpiWeight = $('#kpiWeight'), kpiTemp = $('#kpiTemp'), kpiHum = $('#kpiHum'), kpiVolt = $('#kpiVolt'), kpiRs = $('#kpiRs');
+    const spectralList = $('#spectralList');
 
-    const state = { paused:false, messages:[], maxMessages: 30 };
+    const captureBtn= $('#captureBtn'), img = $('#preview'), imgSkeleton = $('#imgSkeleton'), imgTs = $('#imgTs');
+
+    // ====== Camera logic (unchanged) ======
+    function setImgLoading(on){ if(imgSkeleton) imgSkeleton.style.display = on ? 'block' : 'none'; }
+    function refreshImage(){
+      setImgLoading(true);
+      const ts = Date.now();
+      if (img) img.src = `${IMAGE_URL}?ts=${ts}`;
+      if (imgTs) imgTs.textContent = `ts=${ts}`;
+    }
+    async function captureImage(){
+      try{
+        if (captureBtn){ captureBtn.disabled = true; captureBtn.textContent = '⏳ Capturing…'; }
+        await fetch(CAPTURE_URL, { method: "POST" });
+        refreshImage();
+      }catch(err){
+        console.error('Capture failed:', err); alert('Capture failed. See console.');
+      }finally{
+        setTimeout(()=>{ if (captureBtn){ captureBtn.disabled = false; captureBtn.textContent = '📸 Capture Image'; } }, 600);
+      }
+    }
+    if (captureBtn) captureBtn.addEventListener('click', captureImage);
+    if (img) img.addEventListener('load', ()=> setImgLoading(false));
+    if (img) img.addEventListener('error', ()=> { setImgLoading(false); alert('Failed to load image.'); });
+    window.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='c') captureImage(); });
+    setImgLoading(true);
+
+    // ====== Helpers ======
+    function fmtNum(n, digits=2){
+      if (n === null || n === undefined) return '–';
+      const s = String(n).toLowerCase();
+      if (s === 'inf' || s === 'infinity' || s === '-inf' || s === '-infinity') return '∞';
+      if (Number.isNaN(Number(n))) return String(n);
+      return Number(n).toFixed(digits);
+    }
+    function setChip(el, label, value, mood=''){
+      if(!el) return;
+      el.classList.remove('good','warn','bad');
+      if (mood) el.classList.add(mood);
+      el.textContent = `${label}: ${value}`;
+    }
+    function moodForAir(air){
+      const a = String(air||'').toLowerCase();
+      if (a.includes('fresh') || a.includes('good')) return 'good';
+      if (a.includes('moderate')) return 'warn';
+      if (a.includes('poor') || a.includes('bad')) return 'bad';
+      return '';
+    }
+
+    // ---- JSON sanitizer: make pseudo-JSON parseable ----
+    function sanitizeForJson(str){
+      let s = str.trim();
+      // Replace bare tokens after a colon or in arrays with quoted strings: inf, -inf, Infinity, -Infinity, NaN
+      s = s.replace(/(:\s*)(Infinity|-Infinity|NaN|inf|-inf)(\s*[,\}])/gi,
+        (_, pre, val, tail) => pre + '"' + String(val).toLowerCase() + '"' + tail);
+      s = s.replace(/([\[,]\s*)(Infinity|-Infinity|NaN|inf|-inf)(\s*[\],])/gi,
+        (_, pre, val, tail) => pre + '"' + String(val).toLowerCase() + '"' + tail);
+      // Remove trailing commas
+      s = s.replace(/,\s*([}\]])/g, '$1');
+      return s;
+    }
+    function safeParseSmartJar(msg){
+      try { return JSON.parse(msg); }
+      catch {
+        const clean = sanitizeForJson(msg);
+        return JSON.parse(clean);
+      }
+    }
+
+    // ---- Renderers ----
+    function renderSpectralValues(arr){
+      if (!spectralList) return;
+      spectralList.innerHTML = '';
+      const labels = ['CH0','CH1','CH2','CH3','CH4','CH5'];
+      let sp = Array.isArray(arr) ? arr.slice(0,6) : [];
+      while (sp.length < 6) sp.push(0);
+      sp = sp.map(v => {
+        const num = parseFloat(v);
+        if (!isFinite(num)) return 0;
+        return Math.max(0, Math.min(1, num));
+      });
+      for (let i=0; i<6; i++){
+        const item = document.createElement('div');
+        item.className = 'spectral-item';
+        item.innerHTML = `<div class="label">${labels[i]}</div><div class="val">${sp[i].toFixed(3)}</div>`;
+        spectralList.appendChild(item);
+      }
+    }
+
+    function renderSmartJar(d){
+      if (smartCard) smartCard.style.display = 'block';
+
+      setChip(airChip, 'Air', d.air ?? '–', moodForAir(d.air));
+      setChip(ingChip, 'Ingredient', d.ingredient ?? '–');
+
+      const confPct = Math.max(0, Math.min(100, Math.round((Number(d.confidence)||0)*100)));
+      if (confBar) confBar.style.width = confPct + '%';
+      if (confVal) confVal.textContent = confPct + '%';
+
+      if (kpiWeight) kpiWeight.textContent = `${fmtNum(d.weight, 2)} g`;
+      if (kpiTemp)   kpiTemp.textContent   = `${fmtNum(d.temperature, 1)} °C`;
+      if (kpiHum)    kpiHum.textContent    = `${fmtNum(d.humidity, 1)} %`;
+      if (kpiVolt)   kpiVolt.textContent   = `${fmtNum(d.voltage, 2)} V`;
+      if (kpiRs)     kpiRs.textContent     = `${fmtNum(d.rs, 0)}`;
+
+      renderSpectralValues(d.spectral);
+    }
+
+    // ====== MQTT (single-button flow, tolerant parse) ======
+    let waitTimer = null;
+    const WAIT_MS = 5000;
 
     function setConnStatus(status){
+      if(!connBadge || !connText) return;
       connBadge.classList.remove('status-good','status-bad');
       if(status==='connected'){ connBadge.classList.add('status-good'); connText.textContent='Connected'; }
       else if(status==='error'){ connBadge.classList.add('status-bad'); connText.textContent='Error'; }
-      else if(status==='reconnecting'){ connBadge.classList.remove('status-good','status-bad'); connText.textContent='Reconnecting…'; }
+      else if(status==='reconnecting'){ connText.textContent='Reconnecting…'; }
       else { connText.textContent='Connecting…'; }
     }
 
-    function pushMessage(topic, text){
-      const ts = new Date();
-      mqttData.textContent = text;
-      lastMsgTs.textContent = ts.toLocaleTimeString();
-      state.messages.unshift({topic, text, ts});
-      if(state.messages.length > state.maxMessages) state.messages.pop();
-      renderList();
-    }
-
-    function renderList(){
-      msgList.innerHTML = '';
-      state.messages.forEach(({topic,text,ts})=>{
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div style="width:8px; height:8px; border-radius:8px; background: var(--accent); margin-top:8px"></div>
-          <div style="flex:1">
-            <div class="topic">${topic}</div>
-            <div>${escapeHtml(text)}</div>
-            <div class="ts">${ts.toLocaleString()}</div>
-          </div>
-        `;
-        msgList.appendChild(li);
-      });
-    }
-
-    function escapeHtml(s){
-      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    function setImgLoading(on){
-      imgSkeleton.style.display = on ? 'block' : 'none';
-    }
-
-    function refreshImage(){
-      setImgLoading(true);
-      const stamp = Date.now();
-      img.src = `${IMAGE_URL}?ts=${stamp}`;
-      imgTs.textContent = `ts=${stamp}`;
-    }
-
-    // ====== MQTT connection ======
     const client = mqtt.connect(MQTT_BROKER, {
       username: 'bharadwaj',
       password: 'IoTtest1',
@@ -240,77 +350,49 @@
 
     client.on('connect', () => {
       setConnStatus('connected');
-      client.subscribe([TOPIC, SMARTJAR_DATA_TOPIC], err => {
-        if (err) console.error('Subscribe error:', err);
-      });
+      client.subscribe(TOPIC_DATA, err => { if (err) console.error('Subscribe error:', err); });
     });
-
     client.on('reconnect', () => setConnStatus('reconnecting'));
     client.on('error', () => setConnStatus('error'));
     client.on('close', () => setConnStatus('reconnecting'));
 
     client.on('message', (topic, message) => {
-      if(state.paused) return;
-      pushMessage(topic, message.toString());
+      if (topic !== TOPIC_DATA) return;
+      const msgText = message.toString();
+      try{
+        const data = safeParseSmartJar(msgText);
+        renderSmartJar(data);
+        if (reqState) reqState.textContent = 'Received';
+      }catch(e){
+        console.warn('JSON parse/render failed:', e, msgText);
+        if (reqState) reqState.textContent = 'Parse error';
+      }finally{
+        if(waitTimer){ clearTimeout(waitTimer); waitTimer = null; if(getDataBtn) getDataBtn.disabled = false; }
+      }
     });
 
-    // ====== Camera capture ======
-    async function captureImage(){
-      try{
-        captureBtn.disabled = true;
-        captureBtn.textContent = '⏳ Capturing…';
-        await fetch(CAPTURE_URL, { method: "POST" });
-        refreshImage();
-      }catch(err){
-        console.error('Error triggering capture:', err);
-        alert('Capture failed. See console for details.');
-      }finally{
-        setTimeout(()=>{
-          captureBtn.disabled = false;
-          captureBtn.textContent = '📸 Capture Image';
-        }, 600);
-      }
-    }
+    if (getDataBtn) {
+      getDataBtn.addEventListener('click', () => {
+        try{
+          getDataBtn.disabled = true;
+          if (reqState) reqState.textContent = 'Waiting…';
+          client.publish(TOPIC_CMD, 'DATA', { qos: 0, retain: false }, (err)=>{
+            if(err){ console.error('Publish failed:', err); if (reqState) reqState.textContent = 'Send failed'; getDataBtn.disabled = false; }
+          });
 
-    // ====== SmartJar Command ======
-    getDataBtn.addEventListener('click', () => {
-      client.publish(SMARTJAR_TOPIC, 'get_data', { qos: 0, retain: false }, (err) => {
-        if (err) {
-          console.error("❌ Failed to send SmartJar command:", err);
-          alert("Failed to send SmartJar command");
-        } else {
-          console.log("✅ SmartJar command sent!");
+          if(waitTimer) clearTimeout(waitTimer);
+          waitTimer = setTimeout(()=>{
+            if (reqState) reqState.textContent = 'No response';
+            getDataBtn.disabled = false;
+          }, WAIT_MS);
+
+        }catch(err){
+          console.error(err);
+          if (reqState) reqState.textContent = 'Error';
+          getDataBtn.disabled = false;
         }
       });
-    });
-
-    // Bind capture to button
-    captureBtn.addEventListener('click', captureImage);
-
-    // Image loading states
-    img.addEventListener('load', () => setImgLoading(false));
-    img.addEventListener('error', () => { setImgLoading(false); alert('Failed to load image.'); });
-
-    // Controls
-    pauseBtn.addEventListener('click', ()=>{
-      state.paused = !state.paused;
-      pauseBtn.setAttribute('aria-pressed', String(state.paused));
-      pauseBtn.textContent = state.paused ? '▶️ Resume' : '⏸️ Pause';
-    });
-
-    clearBtn.addEventListener('click', ()=>{
-      state.messages = [];
-      renderList();
-    });
-
-    // Keyboard shortcuts
-    window.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='c') captureImage();
-      if(e.key.toLowerCase()==='p') pauseBtn.click();
-    });
-
-    // Initial image shimmer until first load
-    setImgLoading(true);
+    }
   </script>
 </body>
 </html>
